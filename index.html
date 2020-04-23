@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Catat Tugas Kuliah</title>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+	<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+	<section  id="app">
+		<div class="container">
+
+
+			<div class="row justify-content-center">
+
+				<div class="col-md-8">
+					<h1 class="mb-3">MENCATAT TUGAS KULIAH</h1>
+					
+					
+					<div class="form__tugas text-center">
+						<div class="form-group">
+							<input type="text" v-model="tugas" class="input__tugas form-control">
+						</div>
+					</div>
+					<div v-if="reset">
+						<button class="btn btn-success"  v-on:click="updateData">Update Tugas</button>
+						<button class="btn btn-warning"  v-on:click="cancleEdit">Cancel Edit Tugas</button>
+					</div>
+					<button class="btn btn-success" v-else v-on:click="tambahTugas">Tambah Tugas</button>
+				</div>
+
+			</div>
+
+			<hr class="mt-5 mb-5">
+
+			<div class="row justify-content-center">
+
+
+				<div class="col-md-8">
+					<h5 class="mb-3">Tugas Anda</h5>
+
+					<div v-if="dataTugas.length">
+						<div v-for="(data, index) in dataTugas">
+							<div class="alert alert-primary">
+								<div class="row">
+									<div class="col-md-8 my-auto">
+										{{ data.tugas }}
+									</div>
+									<div class="col-md-4 my-auto text-right">
+										<button type="button" v-on:click="editData(index)" class="btn btn-warning button__action">
+											<i class="fa fa-pencil-square" aria-hidden="true"></i>
+										</button>
+										<button type="button" v-on:click="hapusTugas(index)" class="btn btn-danger button__action">
+											<i class="fa fa-minus-circle" aria-hidden="true"></i>
+										</button>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div v-else>
+						<div class="alert alert-warning">Belum Ada Tugas yang diinputkan</div>
+					</div>
+
+				</div>
+
+			</div>
+
+		</div>
+	</section>
+	<script type="text/javascript" src="vue.js"></script>
+
+	<script type="text/javascript">
+		
+		new Vue({
+			el : '#app',
+			data:{
+				tugas:'',
+				dataTugas:[],
+				edit: false,
+				id_tugas:''
+			},
+			methods:{
+				tambahTugas(){
+					var tugas = this.tugas.trim()
+					if (tugas) {
+						this.dataTugas.push({tugas : this.tugas })
+						this.tugas = ''
+						localStorage.setItem('lists', JSON.stringify(this.dataTugas))
+					}else{
+						alert('maaf data tugas harus di ini');
+					}
+				},
+				hapusTugas(index){
+					this.dataTugas.splice(index,1)
+					localStorage.setItem('lists', JSON.stringify(this.dataTugas))
+				},
+				editData(index){
+					this.tugas = this.dataTugas[index]['tugas']
+					this.edit = true
+					this.id_tugas = index
+				},
+				cancleEdit(){
+					this.edit = false
+					this.tugas = ''
+					this.id_tugas = ''
+				},
+				updateData() {
+					var tugas = this.tugas.trim()
+					if (tugas) {
+						this.dataTugas[this.id_tugas]['tugas'] = tugas
+						this.tugas = ''
+						this.edit = false
+						this.id_tugas = ''
+						localStorage.setItem('lists', JSON.stringify(this.dataTugas))
+					}else{
+						alert('maaf data tugas harus di ini');
+					}
+				},
+			},
+			computed:{
+				reset: function () {
+					var tugas = this.tugas.trim()
+
+					if (this.edit == true) {
+						return true;
+					} else {
+						return false;
+					}
+				}
+			},
+			created:function () {
+				this.dataTugas = JSON.parse(localStorage.getItem('lists')) || []
+			}
+
+		});
+
+	</script>
+
+
+</body>
+</html>
